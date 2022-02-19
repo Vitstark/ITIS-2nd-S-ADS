@@ -1,39 +1,51 @@
 package homework1;
 
-public class Stack<T> {
+public class Queue<T> {
 
     private Node head;
+    private Node tail;
     private int size;
 
-    public Stack() {
+    public Queue() {
         head = new Node();
+        tail = head;
     }
 
-    public void push(T value) {
+    public void enqueue(T value) {
         Node node = new Node();
+
+        if (isEmpty()) {
+            tail = node;
+        }
+
         node.value = value;
         node.next = head.next;
         head.next = node;
         size++;
     }
 
-    public T pop() {
+    public T dequeue() {
         if (isEmpty()) {
-            throw new RuntimeException("Stack is empty");
+            throw new RuntimeException("Queue is empty");
         }
 
-        T result = (T) head.next.value;
-        head.next = head.next.next;
+        T result = (T) tail.value;
+        Node node = head;
+        while (node.next.next != null) {
+            node = node.next;
+        }
+        tail = node;
+        node.next = null;
         size--;
         return result;
     }
 
-    public T peek() {
+    public T check() {
         if (isEmpty()) {
-            throw new RuntimeException("Stack is empty");
+            throw new RuntimeException("Queue is Empty");
         }
 
-        return (T) head.next.value;
+        return (T) tail.value;
     }
 
     public boolean isEmpty() {
