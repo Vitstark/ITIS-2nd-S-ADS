@@ -1,8 +1,5 @@
 package homework1;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
 public class LinkedArray<V> {
 
     private ArrayNode head;
@@ -14,6 +11,7 @@ public class LinkedArray<V> {
     private int countOfArrays;
 
     /////////////////////////////////////////////////////////////////
+    // ArrayNode
 
     private static class ArrayNode<V> {
         private V[] array;
@@ -25,7 +23,8 @@ public class LinkedArray<V> {
             array = (V[]) new Object[capacity];
         }
 
-        private ArrayNode() {}
+        private ArrayNode() {
+        }
 
     }
 
@@ -35,8 +34,6 @@ public class LinkedArray<V> {
     public LinkedArray(int BASE) {
         this.BASE = BASE;
         head = new ArrayNode();
-        head.next = new ArrayNode(BASE);
-        countOfArrays = 1;
     }
 
     public LinkedArray() {
@@ -51,7 +48,7 @@ public class LinkedArray<V> {
     }
 
     private void grow() {
-        ArrayNode arrayNode = head.next;
+        ArrayNode arrayNode = head;
 
         while (arrayNode.next != null) {
             arrayNode = arrayNode.next;
@@ -65,8 +62,10 @@ public class LinkedArray<V> {
     private void decline() {
         ArrayNode arrayNode = head;
 
-        while (arrayNode.next.next != null) {
-            arrayNode = arrayNode.next;
+        if (arrayNode.next != null) {
+            while (arrayNode.next.next != null) {
+                arrayNode = arrayNode.next;
+            }
         }
 
         arrayNode.next = null;
@@ -75,13 +74,17 @@ public class LinkedArray<V> {
 
 
     public void append(V value) {
-        ArrayNode arrayNode = head.next;
+        ArrayNode arrayNode = head;
         int number = size;
 
-       while (arrayNode.next != null) {
-           number -= arrayNode.capacity;
-           arrayNode = arrayNode.next;
-       }
+        if (arrayNode.next == null) {
+            grow();
+        }
+
+        while (arrayNode.next != null) {
+            number -= arrayNode.capacity;
+            arrayNode = arrayNode.next;
+        }
 
         if (number == arrayNode.capacity) {
             grow();
@@ -94,6 +97,11 @@ public class LinkedArray<V> {
     }
 
     public void delete() {
+
+        if (size == 0) {
+            throw new IndexOutOfBoundsException("LinkedArray is empty");
+        }
+
         ArrayNode arrayNode = head.next;
         int number = size - 1;
 
