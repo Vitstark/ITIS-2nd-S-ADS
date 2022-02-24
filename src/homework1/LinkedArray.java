@@ -50,6 +50,17 @@ public class LinkedArray<V> {
     /////////////////////////////////////////////////////////////////
     // Methods
 
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public int length() {
+        return size;
+    }
+
+    public void repr() {
+        System.out.println(toString());
+    }
 
     public void append(V value) {
 
@@ -70,6 +81,10 @@ public class LinkedArray<V> {
 
     public void delete() {
 
+        if (isEmpty()) {
+            throw new RuntimeException("LinkedArray is empty");
+        }
+
         lastNode.array[indexOfLastElement] = null;
 
         if (indexOfLastElement == 0) {
@@ -86,14 +101,6 @@ public class LinkedArray<V> {
         indexOfLastElement--;
 
         size--;
-    }
-
-    public int length() {
-        return size;
-    }
-
-    public void repr() {
-        System.out.println(toString());
     }
 
     public V get(int numberOfElement) {
@@ -114,7 +121,7 @@ public class LinkedArray<V> {
 
         String string = "[";
 
-        for (ArrayNode node = head; node != null ; node = node.next) {
+        for (ArrayNode node = head.next; node != null ; node = node.next) {
 
             for (int i = 0; i < node.capacity; i++) {
 
