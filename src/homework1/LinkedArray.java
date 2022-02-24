@@ -4,11 +4,15 @@ public class LinkedArray<V> {
 
     private ArrayNode head;
 
+    private ArrayNode lastNode;
+
+    private int indexOfLastElement;
+
     private final int BASE;
 
     private int size;
 
-    private int countOfArrays;
+    private int countOfNodes;
 
     /////////////////////////////////////////////////////////////////
     // ArrayNode
@@ -16,6 +20,7 @@ public class LinkedArray<V> {
     private static class ArrayNode<V> {
         private V[] array;
         private ArrayNode next;
+        private ArrayNode prev;
         private int capacity;
 
         private ArrayNode(int base) {
@@ -24,6 +29,7 @@ public class LinkedArray<V> {
         }
 
         private ArrayNode() {
+            capacity = 0;
         }
 
     }
@@ -34,6 +40,7 @@ public class LinkedArray<V> {
     public LinkedArray(int BASE) {
         this.BASE = BASE;
         head = new ArrayNode();
+        lastNode = head;
     }
 
     public LinkedArray() {
@@ -43,80 +50,50 @@ public class LinkedArray<V> {
     /////////////////////////////////////////////////////////////////
     // Methods
 
-    public int length() {
-        return size;
-    }
-
-    private void grow() {
-        ArrayNode arrayNode = head;
-
-        while (arrayNode.next != null) {
-            arrayNode = arrayNode.next;
-        }
-
-        ArrayNode newArrayNode = new ArrayNode(BASE + countOfArrays);
-        countOfArrays++;
-        arrayNode.next = newArrayNode;
-    }
-
-    private void decline() {
-        ArrayNode arrayNode = head;
-
-        if (arrayNode.next != null) {
-            while (arrayNode.next.next != null) {
-                arrayNode = arrayNode.next;
-            }
-        }
-
-        arrayNode.next = null;
-        countOfArrays--;
-    }
-
 
     public void append(V value) {
-        ArrayNode arrayNode = head;
-        int number = size;
 
-        if (arrayNode.next == null) {
-            grow();
+        indexOfLastElement++;
+
+        if (lastNode.capacity <= indexOfLastElement) {
+            ArrayNode<V> newNode = new ArrayNode(BASE + countOfNodes);
+            lastNode.next = newNode;
+            lastNode = newNode;
+            countOfNodes++;
+            indexOfLastElement = 0;
         }
 
-        while (arrayNode.next != null) {
-            number -= arrayNode.capacity;
-            arrayNode = arrayNode.next;
-        }
+        lastNode.array[indexOfLastElement] = value;
 
-        if (number == arrayNode.capacity) {
-            grow();
-            arrayNode = arrayNode.next;
-            number = 0;
-        }
-
-        arrayNode.array[number] = value;
         size++;
     }
 
     public void delete() {
 
-        if (size == 0) {
-            throw new IndexOutOfBoundsException("LinkedArray is empty");
+        lastNode.array[indexOfLastElement] = null;
+
+        if (indexOfLastElement == 0) {
+            ArrayNode node = head;
+            while(node.next.next != null) {
+                node = node.next;
+            }
+            node.next = null;
+            lastNode = node;
+            countOfNodes--;
+            indexOfLastElement = lastNode.capacity;
         }
 
-        ArrayNode arrayNode = head.next;
-        int number = size - 1;
-
-        while (arrayNode.next != null) {
-            number -= arrayNode.capacity;
-            arrayNode = arrayNode.next;
-        }
-
-        arrayNode.array[number] = null;
-
-        if (arrayNode.array[0] == null) {
-            decline();
-        }
+        indexOfLastElement--;
 
         size--;
+    }
+
+    public int length() {
+        return size;
+    }
+
+    public void repr() {
+        System.out.println(toString());
     }
 
     public V get(int numberOfElement) {
@@ -133,21 +110,29 @@ public class LinkedArray<V> {
         }
     }
 
-    public void repr() {
-        System.out.println(toString());
+    public String toString() {
+
+        String string = "[";
+
+        for (ArrayNode node = head; node != null ; node = node.next) {
+
+            for (int i = 0; i < node.capacity; i++) {
+
+                if (i + 1 == node.capacity) {
+                    string += node.array[i];
+                } else {
+                    string += node.array[i] + ", ";
+                }
+
+            }
+
+            if (node.next != null) {
+                string += "]\n[";
+            }
+
+        }
+
+        return string + "]";
     }
 
-    @Override
-    public String toString() {
-        ArrayNode arrayNode = head.next;
-        String string = "[";
-        for (int i = 0; i < countOfArrays; i++) {
-            for (int j = 0; j < arrayNode.capacity - 1; j++) {
-                string += arrayNode.array[j] + ", ";
-            }
-            string += arrayNode.array[arrayNode.capacity - 1] + "]\n[";
-            arrayNode = arrayNode.next;
-        }
-        return string.substring(0, string.length() - 1);
-    }
 }
