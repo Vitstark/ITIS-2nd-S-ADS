@@ -69,8 +69,10 @@ public class LinkedArray<V> {
         if (lastNode.capacity <= indexOfLastElement) {
             ArrayNode<V> newNode = new ArrayNode(BASE + countOfNodes);
             lastNode.next = newNode;
+            newNode.prev = lastNode;
             lastNode = newNode;
             countOfNodes++;
+
             indexOfLastElement = 0;
         }
 
@@ -88,12 +90,8 @@ public class LinkedArray<V> {
         lastNode.array[indexOfLastElement] = null;
 
         if (indexOfLastElement == 0) {
-            ArrayNode node = head;
-            while(node.next.next != null) {
-                node = node.next;
-            }
-            node.next = null;
-            lastNode = node;
+            lastNode = lastNode.prev;
+            lastNode.next = null;
             countOfNodes--;
             indexOfLastElement = lastNode.capacity;
         }
